@@ -16,7 +16,7 @@ node {
     def PM2_INIT_COMMAND = '\'pm2 delete www; \
                             rm -rf /home/'+PRODUCTION_USER+'/test01; \
                             exit;\''
-    def SOURCE_PATH = '/var/jenkins_home/workspace/touchad-'+PRODUCTION_BRANCH+'@script'
+    def SOURCE_PATH = '/var/jenkins_home/workspace/test01-'+PRODUCTION_BRANCH+'@script'
     def PM2_START_COMMAND = '\'mv /home/'+PRODUCTION_USER+'/test01-'+PRODUCTION_BRANCH+'@script \
                             /home/'+PRODUCTION_USER+'/test01; \
                             cd /home/'+PRODUCTION_USER+'/test01; \
