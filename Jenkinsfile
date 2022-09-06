@@ -9,7 +9,7 @@ node {
         DEPLOY_YYYYMMDDHHMM = dateFormat.format(date)
     }
     def PRODUCTION_CREDENTIALS_ID = '3487ee3c-7a1c-434a-97e0-7f183a0cd771'
-    def PRODUCTION_BRANCH = 'production_0'
+    def PRODUCTION_BRANCH = 'production-0'
     def PRODUCTION_USER = 'youdig'
     def PRODUCTION_HOST = '34.64.85.152'
     def GCP_CLIENT_HOST = '172.17.0.1'
