@@ -27,7 +27,7 @@ node {
     def GCP_SNAPSHOT_COMMAND = '\'gcloud compute disks snapshot \
                             straffic-1 \
                             --snapshot-names=snapshot-'+PRODUCTION_BRANCH+'-'+DEPLOY_YYYYMMDDHHMM+'\
-                            --zone=asia-northeast3-c \
+                            --zone=asia-northeast3-a \
                             --description="touchad '+PRODUCTION_BRANCH+' snapshot"; \
                             exit;\''
 
