@@ -99,7 +99,7 @@ node {
         }        
     }
 
-    stage ('group-0') {
+    stage ('group') {
         sshagent(credentials : [PRODUCTION_CREDENTIALS_ID]) {
             sh 'ssh '+PRODUCTION_USER+'@'+GCP_CLIENT_HOST+' -o StrictHostKeyChecking=no ' + GCP_GROUP_COMMAND
         }        

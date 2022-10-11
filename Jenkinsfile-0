@@ -55,14 +55,8 @@ node {
                             --no-address; \
                             exit;\''
 
-    def GCP_GROUP_COMMAND_0 = '\'gcloud compute instance-groups managed rolling-action start-update \
+    def GCP_GROUP_COMMAND = '\'gcloud compute instance-groups managed rolling-action start-update \
                             instance-group-'+PRODUCTION_BRANCH+'-0 \
-                            --version=template=instance-template-'+PRODUCTION_BRANCH+'-'+DEPLOY_YYYYMMDDHHMM+' \
-                            --zone=asia-northeast3-a; \
-                            exit;\''
-
-    def GCP_GROUP_COMMAND_1 = '\'gcloud compute instance-groups managed rolling-action start-update \
-                            instance-group-'+PRODUCTION_BRANCH+'-1 \
                             --version=template=instance-template-'+PRODUCTION_BRANCH+'-'+DEPLOY_YYYYMMDDHHMM+' \
                             --zone=asia-northeast3-a; \
                             exit;\''
@@ -105,16 +99,10 @@ node {
         }        
     }
 
-    stage ('group-0') {
+    stage ('group') {
         sshagent(credentials : [PRODUCTION_CREDENTIALS_ID]) {
-            sh 'ssh '+PRODUCTION_USER+'@'+GCP_CLIENT_HOST+' -o StrictHostKeyChecking=no ' + GCP_GROUP_COMMAND_0
+            sh 'ssh '+PRODUCTION_USER+'@'+GCP_CLIENT_HOST+' -o StrictHostKeyChecking=no ' + GCP_GROUP_COMMAND
         }        
     }
-
-    stage ('group-1') {
-        sshagent(credentials : [PRODUCTION_CREDENTIALS_ID]) {
-            sh 'ssh '+PRODUCTION_USER+'@'+GCP_CLIENT_HOST+' -o StrictHostKeyChecking=no ' + GCP_GROUP_COMMAND_1
-        }        
-    }   
 
 }
