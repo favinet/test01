@@ -24,6 +24,43 @@ node {
                             pm2 start ./bin/www; \
                             exit;\''
 
+    def GCP_SNAPSHOT_COMMAND = '\'gcloud compute disks snapshot \
+                            straffic-1 \
+                            --snapshot-names=snapshot-'+PRODUCTION_BRANCH+'-'+DEPLOY_YYYYMMDDHHMM+'\
+                            --zone=asia-northeast3-a \
+                            --description="touchad '+PRODUCTION_BRANCH+' snapshot"; \
+                            exit;\''
+
+    def GCP_IMAGE_COMMAND = '\'gcloud compute images create image-'+PRODUCTION_BRANCH+'-'+DEPLOY_YYYYMMDDHHMM+' \
+                            --source-snapshot=snapshot-'+PRODUCTION_BRANCH+'-'+DEPLOY_YYYYMMDDHHMM+'; \
+                            exit;\''
+
+    def GCP_TEMPLATE_COMMAND = '\'gcloud compute instance-templates create \
+                            instance-template-'+PRODUCTION_BRANCH+'-'+DEPLOY_YYYYMMDDHHMM+' \
+                            --machine-type e2-medium \
+                            --boot-disk-auto-delete \
+                            --boot-disk-device-name=instance-template-'+PRODUCTION_BRANCH+'-'+DEPLOY_YYYYMMDDHHMM+' \
+                            --boot-disk-size=20G \
+                            --boot-disk-type=pd-ssd \
+                            --image-project=core-rhythm-279909 \
+                            --image=image-'+PRODUCTION_BRANCH+'-'+DEPLOY_YYYYMMDDHHMM+' \
+                            --shielded-integrity-monitoring \
+                            --shielded-vtpm \
+                            --service-account 1034906453695-compute@developer.gserviceaccount.com \
+                            --scopes default \
+                            --network touchad-nw \
+                            --subnet production-sub-0 \
+                            --region asia-northeast3 \
+                            --tags http-server,https-server,no-addr,production \
+                            --no-address; \
+                            exit;\''
+
+    def GCP_GROUP_COMMAND   = '\'gcloud compute instance-groups managed rolling-action start-update \
+                            instance-group-'+PRODUCTION_BRANCH+'-1 \
+                            --version=template=instance-template-'+PRODUCTION_BRANCH+'-'+DEPLOY_YYYYMMDDHHMM+' \
+                            --zone=asia-northeast3-a; \
+                            exit;\''
+
     stage ('init') {
         sshagent(credentials : [PRODUCTION_CREDENTIALS_ID]) {
             sh 'ssh '+PRODUCTION_USER+'@'+PRODUCTION_HOST+' -o StrictHostKeyChecking=no ' + PM2_INIT_COMMAND
@@ -37,6 +74,34 @@ node {
     stage ('deploy') {
         sshagent(credentials : [PRODUCTION_CREDENTIALS_ID]) {
             sh 'ssh '+PRODUCTION_USER+'@'+PRODUCTION_HOST+' -o StrictHostKeyChecking=no ' + PM2_START_COMMAND
+        }        
+    }
+
+    stage ("wait") {
+        sleep 60 //seconds
+    }
+
+    stage ('snapshot') {
+        sshagent(credentials : [PRODUCTION_CREDENTIALS_ID]) {
+            sh 'ssh '+PRODUCTION_USER+'@'+GCP_CLIENT_HOST+' -o StrictHostKeyChecking=no ' + GCP_SNAPSHOT_COMMAND
+        }        
+    }
+
+    stage ('image') {
+        sshagent(credentials : [PRODUCTION_CREDENTIALS_ID]) {
+            sh 'ssh '+PRODUCTION_USER+'@'+GCP_CLIENT_HOST+' -o StrictHostKeyChecking=no ' + GCP_IMAGE_COMMAND
+        }        
+    }
+
+    stage ('template') {
+        sshagent(credentials : [PRODUCTION_CREDENTIALS_ID]) {
+            sh 'ssh '+PRODUCTION_USER+'@'+GCP_CLIENT_HOST+' -o StrictHostKeyChecking=no ' + GCP_TEMPLATE_COMMAND
+        }        
+    }
+
+    stage ('group-0') {
+        sshagent(credentials : [PRODUCTION_CREDENTIALS_ID]) {
+            sh 'ssh '+PRODUCTION_USER+'@'+GCP_CLIENT_HOST+' -o StrictHostKeyChecking=no ' + GCP_GROUP_COMMAND
         }        
     }
 
