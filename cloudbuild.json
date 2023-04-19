@@ -1,0 +1,20 @@
+{
+  "steps": [
+    {
+      "name": "node",
+      "entrypoint": "npm",
+      "args": ["install"]
+    },
+    {
+      "name": "node",
+      "entrypoint": "npm",
+      "args": ["start"]
+    },
+    {
+      "id": "run-terraform-apply",
+      "name": "gcr.io/cloud-builders/gcloud",
+      "env": ["PROJECT_ID=$PROJECT_ID"],
+      "script": "#!/bin/bash\n set -e\nsource /workspace/lib/bash_utils.sh\ntf_apply\n"
+    }
+  ]
+}
