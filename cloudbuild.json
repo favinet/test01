@@ -16,8 +16,5 @@
       "env": ["PROJECT_ID=$PROJECT_ID"],
       "script": "#!/bin/bash\n set -e\nsource /workspace/lib/bash_utils.sh\ntf_apply\n"
     }
-  ],
-  "options": {
-    "logging": "CLOUD_LOGGING_ONLY"
-  }
+  ]
 }
